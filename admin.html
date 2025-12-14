@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Immigration Admin Dashboard</title>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background-color: #e0f7fa;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1 {
+    text-align: center;
+    padding: 20px;
+    background-color: #00796b;
+    color: white;
+    margin: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  th {
+    background-color: #00796b;
+    color: white;
+  }
+
+  .approve {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .reject {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .delete {
+    background-color: #9e9e9e;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .pending { color: orange; font-weight: bold; }
+  .approved { color: green; font-weight: bold; }
+  .rejected { color: red; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>Immigration Admin Dashboard</h1>
+
+<div class="container">
+  <table>
+    <thead>
+      <tr>
+        <th>Full Name</th>
+        <th>Replacement No</th>
+        <th>NIN</th>
+        <th>State</th>
+        <th>LGA</th>
+        <th>Next of Kin</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Qualification</th>
+        <th>Marital Status</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="adminData">
+      <!-- Data will be populated here -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+// ===== Load volunteers from LocalStorage =====
+function loadAdminTable() {
+  let volunteers = JSON.parse(localStorage.getItem("volunteers")) || [];
+  let tbody = document.getElementById("adminData");
+  tbody.innerHTML = "";
+
+  if(volunteers.length === 0){
+    tbody.innerHTML = `<tr><td colspan="12">No submissions yet.</td></tr>`;
+    return;
+  }
+
+  volunteers.forEach((v, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${v.fullname}</td>
+        <td>${v.passportNo}</td>
+        <td>${v.nin}</td>
+        <td>${v.state}</td>
+        <td>${v.lga}</td>
+        <td>${v.nextOfKin}</td>
+        <td>${v.email}</td>
+        <td>${v.address}</td>
+        <td>${v.qualification}</td>
+        <td>${v.maritalStatus}</td>
+        <td class="${v.status.toLowerCase()}">${v.status}</td>
+        <td>
+          <button class="approve" onclick="updateStatus(${i}, 'Approved')">Approve</button>
+          <button class="reject" onclick="updateStatus(${i}, 'Rejected')">Reject</button>
+          <button class="delete" onclick="deleteVolunteer(${i})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// ===== Update status =====
+function updateStatus(index, status){
+  let volunteers = JSON.parse(localStorage.getItem("volunteers")) || [];
+  volunteers[index].status = status;
+  localStorage.setItem("volunteers", JSON.stringify(volunteers));
+  loadAdminTable();
+}
+
+// ===== Delete volunteer =====
+function deleteVolunteer(index){
+  let volunteers = JSON.parse(localStorage.getItem("volunteers")) || [];
+  volunteers.splice(index, 1);
+  localStorage.setItem("volunteers", JSON.stringify(volunteers));
+  loadAdminTable();
+}
+
+// Load table on page load
+document.addEventListener("DOMContentLoaded", loadAdminTable);
+</script>
+
+</body>
+</html>
